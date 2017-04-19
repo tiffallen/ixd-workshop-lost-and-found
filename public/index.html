@@ -34,9 +34,7 @@
             var map;
             
             function initMap() {
-                setTimeout(function () {
-                    $("#map-loading").fadeOut();
-                }, 3000);
+                $("#map-loading").fadeOut();
                 getGeoPosition(function (pos) {
                     map = new google.maps.Map(document.getElementById("map"), {
                         zoom: 15,
@@ -44,24 +42,28 @@
                     });
                     var marker = new google.maps.Marker({
                         position: pos,
+                        icon: "img/self.png",
                         map: map
                     });
-                })
+                    loadLost();
+                }, function (err) {
+                    console.log(err);
+                });
             }
             
             function loadLost() {
                 $.ajax({
-                    url: "/ajax/lost?action=get_losts",
+                    url: "/ajax/lost?action=get",
                     type: "get",
                     success: function (result) {
                         var data = JSON.parse(result);
                         if (data.code == 0) {
                             var losts = data.content;
                             losts.forEach(function (lost) {
-                                var marker = new google.maps.Marker({
-                                    position: lost.position,
-                                    map: map
-                                });
+                                var item = new google.maps.InfoWindow;
+                                item.setPosition({lat: lost.lat, lng: lost.lng});
+                                item.setContent(lost.name);
+                                item.open(map);
                             });
                         }
                         else {
@@ -69,7 +71,7 @@
                         }
                     },
                     error: function () {
-                        alert("Load Losts Failed");
+                        alert("Internet connection error");
                     }
                 });
             }
@@ -81,21 +83,28 @@
                 if ($("#found-description").val() == "") {
                     alert("Please insert the description of the item");
                 }
-                getGeoPosition(function (pos) {
+                randomClosePosition(function (pos) {
                     $.ajax({
                         url: "/ajax/found?action=post",
                         type: "post",
                         data: {
                             name: $("#found-item").val(),
                             description: $("#found-description").val(),
-                            position: pos
+                            lat: pos.lat,
+                            lng: pos.lng
                         },
                         success: function (result) {
                             var data = JSON.parse(result);
-                            
+                            if (data.code == 0) {
+                                alert("Post Success!");
+                                window.location.reload();
+                            }
+                            else {
+                                alert("Error " + data.code + ": " + data.msg);
+                            }
                         },
                         error: function () {
-                            
+                            alert("Internet connection error");
                         }
                     });
                 });
@@ -104,6 +113,14 @@
             function getGeoPosition(callback) {
                 navigator.geolocation.getCurrentPosition(function (info) {
                     callback({lat: info.coords.latitude, lng: info.coords.longitude});
+                });
+            }
+            
+            function randomClosePosition(callback) {
+                getGeoPosition(function (pos) {
+                    pos.lat += -0.01 + Math.random() * 0.02;
+                    pos.lng += -0.01 + Math.random() * 0.02;
+                    callback(pos);
                 });
             }
         </script>
