@@ -1,3 +1,10 @@
+<!--
+DesignAtLarge/ixd-workshop-lost-and-found
+@Author: Ziyang Li
+@Website: https://liby.me
+@Date: Apr.18 2017
+-->
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -105,25 +112,6 @@
                     pos.lng += -0.01 + Math.random() * 0.02;
                     callback(pos);
                 });
-            }
-            
-            /**
-             * Helper ajax function
-             */
-            function ajax(option) {
-                option.success = function (result) {
-                    var data = JSON.parse(result);
-                    if (data.code == 0) {
-                        option.success(data.content);
-                    }
-                    else {
-                        alert("Error " + data.code + ": " + data.msg);
-                    }
-                };
-                option.error = function () {
-                    alert("Internet connection error");
-                };
-                $.ajax(option);
             }
         </script>
         <script src="js/index.js"></script>
