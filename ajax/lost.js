@@ -1,5 +1,1 @@
-module.exports = {
-    get: function (req, res) {
-        res.success(require("./data.json"));
-    }
-}
+/* TODO: Implement the lost AJAX Handler */

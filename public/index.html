@@ -52,26 +52,11 @@
             }
             
             function loadLost() {
-                $.ajax({
-                    url: "/ajax/lost?action=get",
-                    type: "get",
-                    success: function (result) {
-                        var data = JSON.parse(result);
-                        if (data.code == 0) {
-                            var losts = data.content;
-                            losts.forEach(function (lost) {
-                                var item = new google.maps.InfoWindow;
-                                item.setPosition({lat: lost.lat, lng: lost.lng});
-                                item.setContent(lost.name);
-                                item.open(map);
-                            });
-                        }
-                        else {
-                            alert("Error " + data.code + ": " + data.msg);
-                        }
-                    },
-                    error: function () {
-                        alert("Internet connection error");
+                ajax({
+                    url: /* TODO: AJAX url to load the losts */,
+                    type: /* TODO: AJAX Type */,
+                    success: function (data) {
+                        /* TODO: What to do after retrieving the losts? */
                     }
                 });
             }
@@ -84,44 +69,61 @@
                     alert("Please insert the description of the item");
                 }
                 randomClosePosition(function (pos) {
-                    $.ajax({
-                        url: "/ajax/found?action=post",
-                        type: "post",
+                    ajax({
+                        url: /* TODO: AJAX url to post a found */,
+                        type: /* TODO: AJAX type */,
                         data: {
-                            name: $("#found-item").val(),
-                            description: $("#found-description").val(),
-                            lat: pos.lat,
-                            lng: pos.lng
+                            /* TODO: Data to pass to the backend */
                         },
-                        success: function (result) {
-                            var data = JSON.parse(result);
-                            if (data.code == 0) {
-                                alert("Post Success!");
-                                window.location.reload();
-                            }
-                            else {
-                                alert("Error " + data.code + ": " + data.msg);
-                            }
-                        },
-                        error: function () {
-                            alert("Internet connection error");
+                        success: function (data) {
+                            /* TODO: What to do after success? */
                         }
                     });
                 });
             }
             
+            /**
+             * [getGeoPosition description]
+             * @param  {Function} callback Put the current geolocation back
+             */
             function getGeoPosition(callback) {
-                navigator.geolocation.getCurrentPosition(function (info) {
-                    callback({lat: info.coords.latitude, lng: info.coords.longitude});
-                });
+                // TODO: Try to get geolocation and put the result back to
+                // callback in the form of
+                //  {
+                //      lat: <LATITUDE>,
+                //      lng: <LONGITUDE>
+                //  }
             }
             
+            /**
+             * Random a close position based on the current geolocation
+             * @param  {Function} callback Put the randomized geolocation back
+             */
             function randomClosePosition(callback) {
                 getGeoPosition(function (pos) {
                     pos.lat += -0.01 + Math.random() * 0.02;
                     pos.lng += -0.01 + Math.random() * 0.02;
                     callback(pos);
                 });
+            }
+            
+            /**
+             * Helper ajax function
+             */
+            function ajax(option) {
+                option.success = function (result) {
+                    var data = JSON.parse(result);
+                    if (data.code == 0) {
+                        option.success(data.content);
+                    }
+                    else {
+                        alert("Error " + data.code + ": " + data.msg);
+                    }
+                };
+                option.error = function () {
+                    alert("Internet connection error");
+                };
+                $.ajax(option);
             }
         </script>
         <script src="js/index.js"></script>
