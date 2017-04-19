@@ -30,8 +30,20 @@
             <tab id="lost-tab" class="active">Lost</tab>
             <tab id="found-tab">Found</tab>
         </footer>
+        <panel style="display: none" id="info-panel">
+            <panel-mask onclick="infoPanel.hide()"></panel-mask>
+            <panel-body>
+                <panel-head>
+                    <div id="info-title"></div>
+                    <i onclick="infoPanel.hide()">x</i>
+                </panel-head>
+                <panel-body>
+                    <div id="info-description"></div>
+                </panel-body>
+            </panel-body>
+        </panel>
         <script>
-            var map;
+            var map, found;
             
             function initMap() {
                 $("#map-loading").fadeOut();
@@ -56,11 +68,19 @@
                     url: "/ajax/lost?action=get",
                     type: "get",
                     success: function (data) {
+                        found = data;
                         data.forEach(function (lost) {
-                            var item = new google.maps.InfoWindow;
+                            var item = new google.maps.InfoWindow();
                             item.setPosition({lat: lost.lat, lng: lost.lng});
                             item.setContent(lost.name);
                             item.open(map);
+                            google.maps.event.addListener(item, "click", function (item, i) {
+                                infoPanel.load({
+                                    title: item.title,
+                                    description: found[i].description
+                                });
+                                infoPanel.show();
+                            });
                         });
                     }
                 });

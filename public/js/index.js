@@ -24,3 +24,16 @@ function ajax(option) {
     };
     $.ajax(option);
 }
+
+var infoPanel = {
+    show: function () {
+        $("#info-panel").fadeIn();
+    },
+    hide: function () {
+        $("#info-panel").fadeOut();
+    },
+    load: function (option) {
+        $("#info-title").text(option.title);
+        $("#info-body").text(option.description);
+    }
+}
