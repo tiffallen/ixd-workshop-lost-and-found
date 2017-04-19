@@ -52,26 +52,16 @@
             }
             
             function loadLost() {
-                $.ajax({
+                ajax({
                     url: "/ajax/lost?action=get",
                     type: "get",
-                    success: function (result) {
-                        var data = JSON.parse(result);
-                        if (data.code == 0) {
-                            var losts = data.content;
-                            losts.forEach(function (lost) {
-                                var item = new google.maps.InfoWindow;
-                                item.setPosition({lat: lost.lat, lng: lost.lng});
-                                item.setContent(lost.name);
-                                item.open(map);
-                            });
-                        }
-                        else {
-                            alert("Error " + data.code + ": " + data.msg);
-                        }
-                    },
-                    error: function () {
-                        alert("Internet connection error");
+                    success: function (data) {
+                        data.forEach(function (lost) {
+                            var item = new google.maps.InfoWindow;
+                            item.setPosition({lat: lost.lat, lng: lost.lng});
+                            item.setContent(lost.name);
+                            item.open(map);
+                        });
                     }
                 });
             }
@@ -84,7 +74,7 @@
                     alert("Please insert the description of the item");
                 }
                 randomClosePosition(function (pos) {
-                    $.ajax({
+                    ajax({
                         url: "/ajax/found?action=post",
                         type: "post",
                         data: {
@@ -93,18 +83,9 @@
                             lat: pos.lat,
                             lng: pos.lng
                         },
-                        success: function (result) {
-                            var data = JSON.parse(result);
-                            if (data.code == 0) {
-                                alert("Post Success!");
-                                window.location.reload();
-                            }
-                            else {
-                                alert("Error " + data.code + ": " + data.msg);
-                            }
-                        },
-                        error: function () {
-                            alert("Internet connection error");
+                        success: function (data) {
+                            alert("Post Success!");
+                            window.location.reload();
                         }
                     });
                 });

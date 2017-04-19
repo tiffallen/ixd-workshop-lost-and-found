@@ -14,7 +14,6 @@ module.exports = {
         }
         req.body.lat = parseFloat(req.body.lat);
         req.body.lng = parseFloat(req.body.lng);
-        console.log(req.body);
         require("./data.json").push(req.body);
         res.success();
     }
